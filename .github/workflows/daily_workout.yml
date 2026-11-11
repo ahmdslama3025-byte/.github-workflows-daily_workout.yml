@@ -1,0 +1,34 @@
+name: Daily CrossFit Coach Agent
+
+on:
+  schedule:
+    # يعمل يومياً الساعة 7:00 مساءً بتوقيت غرينتش (الموافق 9:00 مساءً بتوقيت مصر)
+    - cron: '0 19 * * *'
+  
+  workflow_dispatch: # يتيح لك تشغيل السكريبت يدويًا في أي وقت للتجربة من موقع جيت هب
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 google-genai
+
+      - name: Run the Workout Agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
+          PHONE_NUMBER_ID: ${{ secrets.PHONE_NUMBER_ID }}
+          MY_PHONE_NUMBER: ${{ secrets.MY_PHONE_NUMBER }}
+        run: |
+          python workout_agent.py
+          
